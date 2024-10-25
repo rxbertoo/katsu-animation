@@ -1,0 +1,28 @@
+config:
+
+  animation-tick: 2
+
+  texture-pack-host:
+    enabled: true
+    port: 8080
+
+messages:
+  compile: "&aSuccess compile the texture pack saved in plugins/KatsuParkour/resoucepack.zip"
+  no-args: "&cPlease complete command, use /kta help for more information."
+  no-args-create: "&cPlease complete command, use /kta create <gif> <size> <height>"
+  no-args-delete: "&cPlease complete command, use /kta delete <gif>"
+  no-args-animation: "&cPlease complete command, use /kta animation <play/stop> "
+  no-args-animation-stop: "&cPlease complete command, use /kta animation stop <player>"
+  no-args-animation-play: "&cPlease complete command, use /kta animation play <gif> <repeat> <tick-update> <player>"
+  no-active-animation: "&cThe player does not have an active animation."
+  gif-not-found: "&cGif not found, make sure the gif is in the plugins/KatsuParkour/gifs folder."
+  gif-not-exist: "&cNo exist any gif with this name."
+  boolean-error: "&cPlease use true or false in repeat mode example /kta animation animation play <gif> true <tick-update> <player>"
+  animation-type-error: "&cPlease use correct type TITLE, ACTION_BAR"
+  player-not-found: "&cPlayer not found, make sure the player is online."
+  active-animation: "&cThe player already has an active animation."
+  play-animation: "&aSuccess play the animation &e%animation% &ato the player.."
+  stop-animation: "&aSuccess stop the animation to the player."
+  delete-texture: "&aSuccess delete the texture, use /kta compile to compile again the texture pack."
+  create-texture: "&aSuccess create the texture, use /kta compile to compile the texture pack."
+  reload: "&aReloaded the config file."

@@ -1,0 +1,10 @@
+name: KatsuAnimation
+version: '1.0-SNAPSHOT'
+main: io.github.maazapan.katsuAnimation.KatsuAnimation
+api-version: 1.16
+
+
+commands:
+  kta:
+    aliases:
+      - katsuanimation
