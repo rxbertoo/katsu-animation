@@ -62,7 +62,6 @@ public class PlayerAnimation {
         this.updateTick = updateTick;
     }
 
-
     public long getTime() {
         return time;
     }
@@ -72,7 +71,7 @@ public class PlayerAnimation {
     }
 
     public void updateTime() {
-        this.time = System.currentTimeMillis() + updateTick;
+        this.time = System.currentTimeMillis() + (updateTick * 20L);
     }
 
     public void nextCharacter() {

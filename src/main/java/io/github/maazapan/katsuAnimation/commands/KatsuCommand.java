@@ -1,14 +1,12 @@
 package io.github.maazapan.katsuAnimation.commands;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import io.github.maazapan.katsuAnimation.KatsuAnimation;
 import io.github.maazapan.katsuAnimation.animations.animation.manager.AnimationLoader;
 import io.github.maazapan.katsuAnimation.animations.animation.manager.AnimationManager;
 import io.github.maazapan.katsuAnimation.animations.animation.type.AnimationType;
 import io.github.maazapan.katsuAnimation.animations.textures.TexturesManager;
+import io.github.maazapan.katsuAnimation.animations.textures.host.TextureHost;
 import io.github.maazapan.katsuAnimation.utils.KatsuUtils;
-import io.github.maazapan.katsuAnimation.utils.TitleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,13 +14,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.util.FileUtil;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class KatsuCommand implements CommandExecutor, TabCompleter {
 
@@ -95,7 +93,13 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
 
+                AnimationManager animationManager = plugin.getAnimationManager();
                 TexturesManager texturesManager = new TexturesManager(plugin);
+
+                if (animationManager.getAnimation(KatsuUtils.formatGifName(gif)) != null) {
+                    sender.sendMessage(KatsuUtils.hex(config.getString("messages.gif-exist")));
+                    return true;
+                }
 
                 try {
                     sender.sendMessage(KatsuUtils.hex(config.getString("messages.create-texture")));
@@ -140,14 +144,24 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
             }
             break;
 
+            /*
+             * This command is used to apply the resource pack.
+             * + Permission: katsuanimation.cmd.apply
+             * - Command: /kta apply
+             */
             case "apply": {
+                if (!sender.hasPermission("katsuanimation.cmd.apply")) {
+                    sender.sendMessage(KatsuUtils.hex(config.getString("messages.no-permission")));
+                    return true;
+                }
+
+                if (TextureHost.TEXTURE_PACK_URL == null) {
+                    sender.sendMessage(KatsuUtils.hex(config.getString("messages.texture-host-not-started")));
+                    return true;
+                }
 
                 Player player = (Player) sender;
-
-                int port = config.getInt("config.texture-pack-host.port");
-                String url = "http://localhost:" + port + "/texturepack";
-
-                player.setResourcePack(url);
+                player.setResourcePack(TextureHost.TEXTURE_PACK_URL);
             }
             break;
 
@@ -180,11 +194,6 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                             return true;
                         }
 
-                        if (Bukkit.getPlayer(args[6]) == null) {
-                            sender.sendMessage(KatsuUtils.hex(config.getString("messages.player-not-found")));
-                            return true;
-                        }
-
                         if (animationManager.getAnimation(args[2]) == null) {
                             sender.sendMessage(KatsuUtils.hex(config.getString("messages.gif-not-exist")));
                             return true;
@@ -205,28 +214,42 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                             return true;
                         }
 
-                        Player target = Bukkit.getPlayer(args[6]);
-
-                        if (animationManager.isActiveAnimation(target.getUniqueId())) {
-                            sender.sendMessage(KatsuUtils.hex(config.getString("messages.active-animation")));
-                            return true;
-                        }
-
                         AnimationType type = AnimationType.get(args[3]);
                         String name = args[2];
 
                         boolean repeat = Boolean.parseBoolean(args[4]);
                         int updateTick = Integer.parseInt(args[5]);
 
-                        animationManager.play(target, name, type, repeat, updateTick);
-                        sender.sendMessage(KatsuUtils.hex(config.getString("messages.play-animation")
-                                .replaceAll("%animation%", name)));
+                        if (!args[6].equalsIgnoreCase("all")) {
+                            if (Bukkit.getPlayer(args[6]) == null) {
+                                sender.sendMessage(KatsuUtils.hex(config.getString("messages.player-not-found")));
+                                return true;
+                            }
+                            Player target = Bukkit.getPlayer(args[6]);
+
+                            if (animationManager.isActiveAnimation(target.getUniqueId())) {
+                                sender.sendMessage(KatsuUtils.hex(config.getString("messages.active-animation")));
+                                return true;
+                            }
+                            sender.sendMessage(KatsuUtils.hex(config.getString("messages.play-animation").replaceAll("%animation%", name)));
+                            return true;
+                        }
+
+                        // Play the animation for all players.
+                        Bukkit.getOnlinePlayers().forEach(player -> {
+                            if (animationManager.isActiveAnimation(player.getUniqueId())) {
+                                animationManager.finish(player.getUniqueId());
+                            }
+                            animationManager.play(player, name, type, repeat, updateTick);
+                        });
+                        sender.sendMessage(KatsuUtils.hex(config.getString("messages.play-animation-all").replaceAll("%animation%", name)));
                     }
                     break;
 
                     /*
                      * This command is used to stop the animation.
                      * - Command: /kta animation stop <player>
+
                      */
                     case "stop": {
                         if (!(args.length > 2)) {
@@ -234,20 +257,30 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                             return true;
                         }
 
-                        if (Bukkit.getPlayer(args[2]) == null) {
-                            sender.sendMessage(KatsuUtils.hex(config.getString("messages.player-not-found")));
+                        if (!args[2].equalsIgnoreCase("all")) {
+                            if (Bukkit.getPlayer(args[2]) == null) {
+                                sender.sendMessage(KatsuUtils.hex(config.getString("messages.player-not-found")));
+                                return true;
+                            }
+
+                            Player target = Bukkit.getPlayer(args[2]);
+
+                            if (!animationManager.isActiveAnimation(target.getUniqueId())) {
+                                sender.sendMessage(KatsuUtils.hex(config.getString("messages.no-active-animation")));
+                                return true;
+                            }
+
+                            sender.sendMessage(KatsuUtils.hex(config.getString("messages.stop-animation")));
+                            animationManager.finish(target.getUniqueId());
                             return true;
                         }
 
-                        Player target = Bukkit.getPlayer(args[2]);
+                        // Stop the animation for all players.
+                        Bukkit.getOnlinePlayers().stream()
+                                .filter(player -> animationManager.isActiveAnimation(player.getUniqueId()))
+                                .forEach(player -> animationManager.finish(player.getUniqueId()));
 
-                        if (!animationManager.isActiveAnimation(target.getUniqueId())) {
-                            sender.sendMessage(KatsuUtils.hex(config.getString("messages.no-active-animation")));
-                            return true;
-                        }
-
-                        sender.sendMessage(KatsuUtils.hex(config.getString("messages.stop-animation")));
-                        animationManager.finish(target.getUniqueId());
+                        sender.sendMessage(KatsuUtils.hex(config.getString("messages.stop-animation-all")));
                     }
                     break;
 
@@ -290,9 +323,15 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command c, String s, String[] args) {
         AnimationManager animationManager = plugin.getAnimationManager();
 
+        List<String> empty = Arrays.asList("", "");
+
         List<String> completions = Arrays.asList("compile", "reload", "create", "delete", "apply", "animation");
         List<String> gifNames = animationManager.getAnimations().stream()
                 .map(animation -> animation.getName()).toList();
+
+        List<String> players = Stream.concat(
+                Bukkit.getOnlinePlayers().stream().map(Player::getName),
+                Stream.of("All")).toList();
 
         File file = new File(plugin.getDataFolder() + "/gifs/");
         List<String> gifFiles = Arrays.asList(file.list());
@@ -308,8 +347,12 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                 case "animation":
                     return Arrays.asList("stop", "play");
                 default:
-                    return null;
+                    return empty;
             }
+        }
+
+        if (args[0].equalsIgnoreCase("stop")) {
+            if (args.length == 3) return players;
         }
 
         // Command: /kta animation play <gif> <type> <repeat> <tick-update> <player>
@@ -317,14 +360,15 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
             if (args.length == 3) return gifNames;
             if (args.length == 4) return Arrays.stream(AnimationType.values()).map(type -> type.name()).toList();
             if (args.length == 5) return Arrays.asList("true", "false");
-            if (args.length == 6) return Arrays.asList("0", "2", "3", "5", "10", "15", "20", "30");
+            if (args.length == 6) return Arrays.asList("16", "8", "5", "4", "2", "0");
+            if (args.length == 7) return players;
         }
 
         // Command: /kta create <gif> <size> <ascent>
         if (args[0].equalsIgnoreCase("create")) {
-            if (args.length == 1) return Arrays.asList("8", "16", "32", "64", "128", "255");
-            if (args.length == 2) return Arrays.asList("0", "8", "16", "32", "64", "128", "255");
+            if (args.length == 3) return Arrays.asList("8", "16", "32", "64", "128", "255");
+            if (args.length == 4) return Arrays.asList("0");
         }
-        return null;
+        return empty;
     }
 }

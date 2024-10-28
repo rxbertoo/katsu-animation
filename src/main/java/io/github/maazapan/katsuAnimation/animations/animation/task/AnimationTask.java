@@ -34,7 +34,7 @@ public class AnimationTask extends BukkitRunnable {
             Player player = plugin.getServer().getPlayer(uuid);
 
             if (player == null) continue;
-            if (playerAnimation.getTime() > System.currentTimeMillis()) continue;
+            if (System.currentTimeMillis() < playerAnimation.getTime()) continue;
             char character = (char) (playerAnimation.getCharacter());
 
             TextComponent textComponent = new TextComponent(String.valueOf(character));

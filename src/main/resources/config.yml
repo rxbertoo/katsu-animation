@@ -1,6 +1,6 @@
 config:
 
-  animation-tick: 2
+  finish-animation-on-quit: true
 
   texture-pack-host:
     enabled: true
@@ -17,12 +17,16 @@ messages:
   no-active-animation: "&cThe player does not have an active animation."
   gif-not-found: "&cGif not found, make sure the gif is in the plugins/KatsuParkour/gifs folder."
   gif-not-exist: "&cNo exist any gif with this name."
+  gif-exist: "&cThe gif with this name already exist, if you want to delete use /kta delete <gif>."
   boolean-error: "&cPlease use true or false in repeat mode example /kta animation animation play <gif> true <tick-update> <player>"
   animation-type-error: "&cPlease use correct type TITLE, ACTION_BAR"
   player-not-found: "&cPlayer not found, make sure the player is online."
   active-animation: "&cThe player already has an active animation."
   play-animation: "&aSuccess play the animation &e%animation% &ato the player.."
+  play-animation-all: "&aSuccess play the animation &e%animation% &ato the all players.."
   stop-animation: "&aSuccess stop the animation to the player."
+  stop-animation-all: "&aSuccess stop the animation to the all players."
   delete-texture: "&aSuccess delete the texture, use /kta compile to compile again the texture pack."
   create-texture: "&aSuccess create the texture, use /kta compile to compile the texture pack."
+  texture-host-not-started: "&cThe texture pack host is not started, see the console for more information."
   reload: "&aReloaded the config file."

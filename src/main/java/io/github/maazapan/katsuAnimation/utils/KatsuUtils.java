@@ -28,6 +28,10 @@ public class KatsuUtils {
     }
 
 
+    public static String formatGifName(String name) {
+        return name.replace(".gif", "");
+    }
+
     public static boolean isBool(String message) {
         return message.equalsIgnoreCase("true") || message.equalsIgnoreCase("false");
     }

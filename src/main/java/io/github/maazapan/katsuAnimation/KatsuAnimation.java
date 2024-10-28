@@ -6,6 +6,7 @@ import io.github.maazapan.katsuAnimation.animations.animation.task.AnimationTask
 import io.github.maazapan.katsuAnimation.animations.files.FilesManager;
 import io.github.maazapan.katsuAnimation.animations.textures.host.TextureHost;
 import io.github.maazapan.katsuAnimation.commands.KatsuCommand;
+import io.github.maazapan.katsuAnimation.listeners.PlayerListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class KatsuAnimation extends JavaPlugin {
@@ -21,6 +22,7 @@ public final class KatsuAnimation extends JavaPlugin {
         filesManager.setup();
 
         this.registerCommands();
+        this.registerListeners();
 
         TextureHost textureHost = new TextureHost(this);
         textureHost.start();
@@ -35,6 +37,11 @@ public final class KatsuAnimation extends JavaPlugin {
     private void registerCommands() {
         getCommand("kta").setExecutor(new KatsuCommand(this));
         getCommand("kta").setTabCompleter(new KatsuCommand(this));
+    }
+
+
+    private void registerListeners() {
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
     }
 
     public FilesManager getFilesManager() {

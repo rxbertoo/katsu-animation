@@ -5,6 +5,8 @@ import io.github.maazapan.katsuAnimation.animations.animation.Animation;
 import io.github.maazapan.katsuAnimation.animations.animation.PlayerAnimation;
 import io.github.maazapan.katsuAnimation.animations.animation.type.AnimationType;
 import io.github.maazapan.katsuAnimation.animations.textures.TexturesManager;
+import io.github.maazapan.katsuAnimation.api.AnimationEndEvent;
+import io.github.maazapan.katsuAnimation.api.AnimationStartEvent;
 import io.github.maazapan.katsuAnimation.utils.KatsuUtils;
 import org.bukkit.entity.Player;
 
@@ -37,6 +39,11 @@ public class AnimationManager {
         playerAnimation.setRepeat(repeat);
         playerAnimation.setUpdateTick(updateTick);
 
+        AnimationStartEvent event = new AnimationStartEvent(playerAnimation, player);
+        plugin.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) return;
+
         playerAnimationMap.put(player.getUniqueId(), playerAnimation);
     }
 
@@ -46,10 +53,22 @@ public class AnimationManager {
      * @param uuid player UUID
      */
     public void finish(UUID uuid) {
+        PlayerAnimation playerAnimation = playerAnimationMap.get(uuid);
+
+        AnimationEndEvent event = new AnimationEndEvent(playerAnimation, uuid);
+        plugin.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) return;
+
         playerAnimationMap.remove(uuid);
     }
 
-
+    /**
+     * Delete animation by name
+     * Also delete textures and json file
+     *
+     * @param name animation name
+     */
     public void deleteAnimation(String name) {
         animations.remove(getAnimation(name));
 
