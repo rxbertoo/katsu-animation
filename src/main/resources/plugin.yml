@@ -2,7 +2,8 @@ name: KatsuAnimation
 version: '${project.version}'
 main: io.github.maazapan.katsuAnimation.KatsuAnimation
 api-version: 1.16
-
+depend:
+  - ProtocolLib
 
 commands:
   kta:
