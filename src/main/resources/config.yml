@@ -1,11 +1,37 @@
+################################################################################################################
+#    _  __          _                      _              _                       _     _   _                  #
+#   | |/ /   __ _  | |_   ___   _   _     / \     _ __   (_)  _ __ ___     __ _  | |_  (_)   ___    _ __       #
+#   | ' /   / _` | | __| / __| | | | |   / _ \   | '_ \  | | | '_ ` _ \   / _` | | __| | |  / _ \  | '_ \      #
+#   | . \  | (_| | | |_  \__ \ | |_| |  / ___ \  | | | | | | | | | | | | | (_| | | |_  | | | (_) | | | | |     #
+#   |_|\_\  \__,_|  \__| |___/  \__,_| /_/   \_\ |_| |_| |_| |_| |_| |_|  \__,_|  \__| |_|  \___/  |_| |_|     #
+#                                                                                                              #
+################################################################################################################
+#-                                    *\ Created by Katsutori Studio © /*                                     -#
+################################################################################################################
+
 config:
 
+  # Finish the animation when the player quit the server.
   finish-animation-on-quit: true
 
+  # This enables the texture pack self host in the plugin
+  # for use this you need open the port in the server firewall
   texture-pack-host:
     enabled: true
     port: 8080
 
+  # This option is for the texture pack join, if you want to use the texture pack join
+  # you need to enable this option and put the url of the texture pack host
+  texture-pack-join:
+    enable: true
+
+    # The url of the texture pack host if you use "self-host", the plugin will use the self hosting
+    # you can use external host like https://mc-packs.net/ or https://www.dropbox.com/
+    url: "self-host"
+
+
+# All the messages of the plugin
+# You can use the color codes with the symbol "&"
 messages:
   compile: "&aSuccess compile the texture pack saved in plugins/KatsuParkour/resoucepack.zip"
   no-args: "&cPlease complete command, use /kta help for more information."

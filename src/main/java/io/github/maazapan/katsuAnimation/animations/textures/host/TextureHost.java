@@ -40,6 +40,7 @@ public class TextureHost {
 
                 if (!isRunning(ip, port)) {
                     plugin.getLogger().warning("Failed to start texture pack host server. Port " + port + " is already in used or is blocked.");
+                    plugin.getLogger().warning("you can disable self-host or use external link in the config.");
                     return;
                 }
                 plugin.getLogger().info("Texture host started on port " + port + " url " + TEXTURE_PACK_URL);

@@ -232,6 +232,7 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                                 return true;
                             }
                             sender.sendMessage(KatsuUtils.hex(config.getString("messages.play-animation").replaceAll("%animation%", name)));
+                            animationManager.play(target, name, type, repeat, updateTick);
                             return true;
                         }
 
