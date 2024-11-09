@@ -6,6 +6,7 @@ import io.github.maazapan.katsuAnimation.animations.animation.task.AnimationTask
 import io.github.maazapan.katsuAnimation.animations.files.FilesManager;
 import io.github.maazapan.katsuAnimation.animations.textures.host.TextureHost;
 import io.github.maazapan.katsuAnimation.commands.KatsuCommand;
+import io.github.maazapan.katsuAnimation.integrations.IntegrationManager;
 import io.github.maazapan.katsuAnimation.listeners.PlayerListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,6 +24,9 @@ public final class KatsuAnimation extends JavaPlugin {
 
         this.registerCommands();
         this.registerListeners();
+
+        IntegrationManager integrationManager = new IntegrationManager(this);
+        integrationManager.load();
 
         TextureHost textureHost = new TextureHost(this);
         textureHost.start();

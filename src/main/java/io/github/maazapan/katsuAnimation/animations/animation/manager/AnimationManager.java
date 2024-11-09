@@ -8,6 +8,9 @@ import io.github.maazapan.katsuAnimation.animations.textures.TexturesManager;
 import io.github.maazapan.katsuAnimation.api.AnimationEndEvent;
 import io.github.maazapan.katsuAnimation.api.AnimationStartEvent;
 import io.github.maazapan.katsuAnimation.utils.KatsuUtils;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -59,6 +62,18 @@ public class AnimationManager {
         plugin.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return;
+        if (Bukkit.getPlayer(uuid) != null) {
+            Player player = Bukkit.getPlayer(uuid);
+
+            switch (playerAnimation.getType()) {
+                case ACTION_BAR:
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(" "));
+                    break;
+                case TITLE:
+                    player.sendTitle(" ", " ");
+                    break;
+            }
+        }
 
         playerAnimationMap.remove(uuid);
     }

@@ -147,11 +147,16 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
             /*
              * This command is used to apply the resource pack.
              * + Permission: katsuanimation.cmd.apply
-             * - Command: /kta apply
+             * - Command: /kta apply <player>
              */
             case "apply": {
                 if (!sender.hasPermission("katsuanimation.cmd.apply")) {
                     sender.sendMessage(KatsuUtils.hex(config.getString("messages.no-permission")));
+                    return true;
+                }
+
+                if (!(args.length > 1)) {
+                    sender.sendMessage(KatsuUtils.hex(config.getString("messages.no-args-apply")));
                     return true;
                 }
 
@@ -160,8 +165,26 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
 
-                Player player = (Player) sender;
-                player.setResourcePack(TextureHost.TEXTURE_PACK_URL);
+                try {
+                    if (!args[1].equalsIgnoreCase("all")) {
+                        if (Bukkit.getPlayer(args[1]) == null) {
+                            sender.sendMessage(KatsuUtils.hex(config.getString("messages.player-not-found")));
+                            return true;
+                        }
+
+                        Player player = Bukkit.getPlayer(args[1]);
+                        player.setResourcePack(TextureHost.TEXTURE_PACK_URL);
+                        sender.sendMessage(KatsuUtils.hex(config.getString("messages.apply-texture").replaceAll("%player%", player.getName())));
+                        return true;
+                    }
+
+                    Bukkit.getOnlinePlayers().forEach(player -> player.setResourcePack(TextureHost.TEXTURE_PACK_URL));
+                    sender.sendMessage(KatsuUtils.hex(config.getString("messages.apply-texture-all")));
+
+                } catch (Exception e) {
+                    sender.sendMessage(KatsuUtils.hex("&cAn error occurred while applying the resource pack, see console for more information."));
+                    e.printStackTrace();
+                }
             }
             break;
 
@@ -337,6 +360,10 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
         File file = new File(plugin.getDataFolder() + "/gifs/");
         List<String> gifFiles = Arrays.asList(file.list());
 
+        if (args[0].equalsIgnoreCase("apply")) {
+            if (args.length == 2) return players;
+        }
+
         if (args.length == 1) return completions;
         if (args.length == 2) {
             switch (args[0].toLowerCase()) {
@@ -352,7 +379,11 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if (args[0].equalsIgnoreCase("stop")) {
+        if (args[0].equalsIgnoreCase("apply")) {
+            if (args.length == 2) return players;
+        }
+
+        if (args[1].equalsIgnoreCase("stop")) {
             if (args.length == 3) return players;
         }
 

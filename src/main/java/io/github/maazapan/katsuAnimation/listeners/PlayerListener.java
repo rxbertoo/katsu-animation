@@ -56,7 +56,7 @@ public class PlayerListener implements Listener {
                 if (Objects.requireNonNull(url).equalsIgnoreCase("self-host")) {
                     if (TextureHost.TEXTURE_PACK_URL == null) {
                         plugin.getLogger().warning("The texture pack self host is not enabled, the texture pack will not be downloaded.");
-                        plugin.getLogger().warning("you can disable self-host or use external link in the config.");
+                        plugin.getLogger().warning("you can disable self-host or use external host and put link in the config.");
                         return;
                     }
                     url = TextureHost.TEXTURE_PACK_URL;
