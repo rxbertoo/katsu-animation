@@ -2,6 +2,7 @@ package io.github.maazapan.katsuAnimation.listeners;
 
 import io.github.maazapan.katsuAnimation.KatsuAnimation;
 import io.github.maazapan.katsuAnimation.animations.animation.manager.AnimationManager;
+import io.github.maazapan.katsuAnimation.animations.textures.ResourcePackManager;
 import io.github.maazapan.katsuAnimation.animations.textures.host.TextureHost;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -62,11 +63,11 @@ public class PlayerListener implements Listener {
                     url = TextureHost.TEXTURE_PACK_URL;
                 }
 
-                player.setResourcePack(url);
+                ResourcePackManager.applyResourcePack(player, url);
 
             } catch (Exception e) {
                 plugin.getLogger().warning("An error occurred while downloading the texture pack.");
-                plugin.getLogger().warning("Make sure the url in the config is correct.");
+                plugin.getLogger().warning("Make sure the url in the config is correct or texture is compiled.");
             }
         }
     }

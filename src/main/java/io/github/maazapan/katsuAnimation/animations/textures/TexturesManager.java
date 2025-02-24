@@ -37,9 +37,9 @@ public class TexturesManager {
      * @param ascent The ascent of the font.
      * @param height The height of the font.
      */
-    public void createTexture(String name, int ascent, int height) throws Exception {
+    public void createTexture(String name, int skipFrames, int ascent, int height) {
         GifManager gifManager = new GifManager(plugin);
-        gifManager.convertGifToPng(name, () -> this.createDefaultJSON(name, ascent, height));
+        gifManager.convertGifToPng(name, skipFrames, () -> this.createDefaultJSON(name, ascent, height));
     }
 
     /**

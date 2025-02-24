@@ -4,6 +4,7 @@ import io.github.maazapan.katsuAnimation.KatsuAnimation;
 import io.github.maazapan.katsuAnimation.animations.textures.TexturesManager;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FilesManager {
@@ -17,11 +18,6 @@ public class FilesManager {
     public void setup() {
         try {
             plugin.saveDefaultConfig();
-
-            // Create the data folder if it doesn't exist.
-            if (!Files.exists(Paths.get(plugin.getDataFolder() + "/gifs"))) {
-                Files.createDirectory(Paths.get(plugin.getDataFolder() + "/gifs"));
-            }
 
             // Create the resourcepack folder if it doesn't exist.
             if (!Files.exists(Paths.get(plugin.getDataFolder() + "/resourcepack"))) {
@@ -38,6 +34,17 @@ public class FilesManager {
                         plugin.saveResource("resourcepack/" + name, false);
                     }
                 }
+            }
+
+            // Create the data folder if it doesn't exist.
+            if (!Files.exists(Paths.get(plugin.getDataFolder() + "/gifs"))) {
+                TexturesManager texturesManager = new TexturesManager(plugin);
+
+                Files.createDirectory(Paths.get(plugin.getDataFolder() + "/gifs"));
+                plugin.saveResource("gifs/countdown.gif", false);
+
+                texturesManager.createTexture("countdown.gif", 0, 0,20);
+                plugin.getLogger().info("Success created countdown default animation...");
             }
 
         } catch (

@@ -16,9 +16,13 @@ config:
 
   # This enables the texture pack self host in the plugin
   # for use this you need open the port in the server firewall
+  # or ask your host for an additional port, most of the time you can add it from your host panel.
   texture-pack-host:
     enabled: true
     port: 8080
+
+    # If your host is used a https connection you need to enable this option
+    SSL: false
 
   # This option is for the texture pack join, if you want to use the texture pack join
   # you need to enable this option and put the url of the texture pack host
@@ -33,9 +37,9 @@ config:
 # All the messages of the plugin
 # You can use the color codes with the symbol "&"
 messages:
-  compile: "&aSuccess compile the texture pack saved in plugins/KatsuParkour/resoucepack.zip"
+  compile: "&aSuccess compile the texture pack saved in plugins/KatsuAnimation/resoucepack.zip"
   no-args: "&cPlease complete command, use /kta for see available commands."
-  no-args-create: "&cPlease complete command, use /kta create <gif> <size> <height>"
+  no-args-create: "&cPlease complete command, use /kta create <gif> <skip-frames> <size> <height>"
   no-args-delete: "&cPlease complete command, use /kta delete <gif>"
   no-args-animation: "&cPlease complete command, use /kta animation <play/stop> "
   no-args-animation-stop: "&cPlease complete command, use /kta animation stop <player>"

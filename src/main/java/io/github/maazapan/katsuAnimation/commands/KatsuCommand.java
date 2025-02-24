@@ -4,6 +4,7 @@ import io.github.maazapan.katsuAnimation.KatsuAnimation;
 import io.github.maazapan.katsuAnimation.animations.animation.manager.AnimationLoader;
 import io.github.maazapan.katsuAnimation.animations.animation.manager.AnimationManager;
 import io.github.maazapan.katsuAnimation.animations.animation.type.AnimationType;
+import io.github.maazapan.katsuAnimation.animations.textures.ResourcePackManager;
 import io.github.maazapan.katsuAnimation.animations.textures.TexturesManager;
 import io.github.maazapan.katsuAnimation.animations.textures.host.TextureHost;
 import io.github.maazapan.katsuAnimation.utils.KatsuUtils;
@@ -70,7 +71,7 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
             /*
              * This command is used to create the resource pack.
              * + Permission: katsuanimation.cmd.create
-             * - Command: /kta create <gif> <size> <ascent>
+             * - Command: /kta create <gif> <skip-frames> <size> <ascent>
              */
             case "create": {
                 if (!sender.hasPermission("katsuanimation.cmd.create")) {
@@ -78,15 +79,17 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
 
-                if (!(args.length > 3)) {
+                if (!(args.length > 4)) {
                     sender.sendMessage(KatsuUtils.hex(config.getString("messages.no-args-create")));
                     return true;
                 }
 
                 String gif = args[1];
 
-                int size = Integer.parseInt(args[2]);
-                int ascent = Integer.parseInt(args[3]);
+                int skipFrames = Integer.parseInt(args[2]);
+
+                int size = Integer.parseInt(args[3]);
+                int ascent = Integer.parseInt(args[4]);
 
                 if (!Files.exists(Paths.get(plugin.getDataFolder() + "/gifs/" + gif))) {
                     sender.sendMessage(KatsuUtils.hex(config.getString("messages.gif-not-found")));
@@ -103,7 +106,7 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
 
                 try {
                     sender.sendMessage(KatsuUtils.hex(config.getString("messages.create-texture")));
-                    texturesManager.createTexture(gif, ascent, size);
+                    texturesManager.createTexture(gif, skipFrames, ascent, size);
 
                     AnimationLoader animationLoader = new AnimationLoader(plugin);
                     animationLoader.load();
@@ -173,12 +176,13 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                         }
 
                         Player player = Bukkit.getPlayer(args[1]);
-                        player.setResourcePack(TextureHost.TEXTURE_PACK_URL);
+
+                        ResourcePackManager.applyResourcePack(player, TextureHost.TEXTURE_PACK_URL);
                         sender.sendMessage(KatsuUtils.hex(config.getString("messages.apply-texture").replaceAll("%player%", player.getName())));
                         return true;
                     }
 
-                    Bukkit.getOnlinePlayers().forEach(player -> player.setResourcePack(TextureHost.TEXTURE_PACK_URL));
+                    Bukkit.getOnlinePlayers().forEach(player -> ResourcePackManager.applyResourcePack(player, TextureHost.TEXTURE_PACK_URL));
                     sender.sendMessage(KatsuUtils.hex(config.getString("messages.apply-texture-all")));
 
                 } catch (Exception e) {
@@ -396,10 +400,11 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
             if (args.length == 7) return players;
         }
 
-        // Command: /kta create <gif> <size> <ascent>
+        // Command: /kta create <gif> <skip-frames> <size> <ascent>
         if (args[0].equalsIgnoreCase("create")) {
-            if (args.length == 3) return Arrays.asList("8", "16", "32", "64", "128", "255");
-            if (args.length == 4) return Arrays.asList("0");
+            if (args.length == 3) return Arrays.asList("0", "1", "2", "3", "4", "5");
+            if (args.length == 4) return Arrays.asList("8", "16", "32", "64", "128", "255");
+            if (args.length == 5) return Arrays.asList("0");
         }
         return empty;
     }

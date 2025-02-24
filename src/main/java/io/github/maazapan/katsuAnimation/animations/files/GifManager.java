@@ -27,7 +27,7 @@ public class GifManager {
      *
      * @param fileName The name of the file.
      */
-    public void convertGifToPng(String fileName, Runnable callback) {
+    public void convertGifToPng(String fileName, int skipFrames, Runnable callback) {
         try {
             File file = new File(plugin.getDataFolder() + "/gifs/" + fileName);
             String name = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -41,6 +41,7 @@ public class GifManager {
             Files.createDirectories(Paths.get(plugin.getDataFolder() + TexturesManager.TEXTURES_PATH + "/" + name));
 
             for (int i = 0; i < reader.getNumImages(true); i++) {
+                if (skipFrames > 0 && i % skipFrames != 0) continue;
                 BufferedImage frame = resizeImage(reader.read(i));
 
                 File outputfile = new File(plugin.getDataFolder() + TexturesManager.TEXTURES_PATH + "/" + name + "/" + i + ".png");

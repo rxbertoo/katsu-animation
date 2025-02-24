@@ -6,7 +6,7 @@
 
     <groupId>io.github.maazapan</groupId>
     <artifactId>KatsuAnimation</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.8</version>
     <packaging>jar</packaging>
 
     <name>KatsuAnimation</name>

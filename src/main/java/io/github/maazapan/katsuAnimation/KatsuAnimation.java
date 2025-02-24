@@ -8,6 +8,7 @@ import io.github.maazapan.katsuAnimation.animations.textures.host.TextureHost;
 import io.github.maazapan.katsuAnimation.commands.KatsuCommand;
 import io.github.maazapan.katsuAnimation.integrations.IntegrationManager;
 import io.github.maazapan.katsuAnimation.listeners.PlayerListener;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class KatsuAnimation extends JavaPlugin {
@@ -18,6 +19,14 @@ public final class KatsuAnimation extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
+            getLogger().warning("ProtocolLib is not installed, disabling plugin.");
+            getLogger().warning("Download and install ProtocolLib from https://www.spigotmc.org/resources/protocollib.1997/");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
         animationManager = new AnimationManager(this);
         filesManager = new FilesManager(this);
         filesManager.setup();

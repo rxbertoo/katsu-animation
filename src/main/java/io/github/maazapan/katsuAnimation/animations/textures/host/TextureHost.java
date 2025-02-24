@@ -23,31 +23,43 @@ public class TextureHost {
     public void start() {
         FileConfiguration config = plugin.getConfig();
 
-        if (!config.getBoolean("config.texture-pack-host.enabled")) return;
-        try {
-            int port = config.getInt("config.texture-pack-host.port");
+        String url = config.getString("config.texture-pack-join.url");
 
-            HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-            server.createContext("/texturepack", new TexturePackHandler(plugin));
-            server.setExecutor(null);
-            server.start();
+        if (!url.equalsIgnoreCase("self-host")) {
+            TEXTURE_PACK_URL = url;
+            plugin.getLogger().info("Texture pack host is disabled, using external link " + TEXTURE_PACK_URL);
+            return;
+        }
 
-            URL url = new URL("http://checkip.amazonaws.com/");
+        if (config.getBoolean("config.texture-pack-host.enabled")) {
+            try {
 
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
-                String ip = br.readLine();
-                TEXTURE_PACK_URL = "http://" + ip + ":" + port + "/texturepack";
+                String ssl = config.getBoolean("config.texture-pack-host.SSL") ? "https" : "http";
+                int port = config.getInt("config.texture-pack-host.port");
 
-                if (!isRunning(ip, port)) {
-                    plugin.getLogger().warning("Failed to start texture pack host server. Port " + port + " is already in used or is blocked.");
-                    plugin.getLogger().warning("you can disable self-host or use external link in the config.");
-                    return;
+                HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+                server.createContext("/texturepack", new TexturePackHandler(plugin));
+                server.setExecutor(null);
+                server.start();
+
+                URL api = new URL("https://checkip.amazonaws.com/");
+
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(api.openStream()))) {
+                    String ip = br.readLine();
+
+                    TEXTURE_PACK_URL = ssl + "://" + ip + ":" + port + "/texturepack";
+
+                    if (!isRunning(ip, port)) {
+                        plugin.getLogger().warning("Failed to start texture pack host server. Port " + port + " is already in used or is blocked.");
+                        plugin.getLogger().warning("you can disable self-host or use external link in the config.");
+                        return;
+                    }
+                    plugin.getLogger().info("Texture host started on port " + port + " url " + TEXTURE_PACK_URL);
                 }
-                plugin.getLogger().info("Texture host started on port " + port + " url " + TEXTURE_PACK_URL);
-            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
