@@ -4,7 +4,6 @@ import io.github.maazapan.katsuAnimation.animations.animation.PlayerAnimation;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -37,7 +36,7 @@ public class AnimationEndEvent extends Event implements Cancellable {
         return uuid;
     }
 
-    @NotNull
+
     @Override
     public HandlerList getHandlers() {
         return HANDLERS;

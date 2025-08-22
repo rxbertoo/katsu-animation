@@ -39,7 +39,7 @@ config:
 messages:
   compile: "&aSuccess compile the texture pack saved in plugins/KatsuAnimation/resoucepack.zip"
   no-args: "&cPlease complete command, use /kta for see available commands."
-  no-args-create: "&cPlease complete command, use /kta create <gif> <skip-frames> <size> <height>"
+  no-args-create: "&cPlease complete command, use /kta create <gif/url> <skip-frames> <size> <height>"
   no-args-delete: "&cPlease complete command, use /kta delete <gif>"
   no-args-animation: "&cPlease complete command, use /kta animation <play/stop> "
   no-args-animation-stop: "&cPlease complete command, use /kta animation stop <player>"
@@ -60,6 +60,8 @@ messages:
   stop-animation-all: "&aSuccess stop the animation to the all players."
   apply-texture-all: "&aSuccess apply the texture to the all players."
   apply-texture: "&aSuccess apply the texture to the %player%."
+  download-error: "&cError download the gif, make sure the gif is a valid url."
+  download-gif: "&aSuccess download the gif with name &e%name%&a, use /kta create to create the texture pack."
   delete-texture: "&aSuccess delete the texture, use /kta compile to compile again the texture pack."
   create-texture: "&aSuccess create the texture, use /kta compile to compile the texture pack."
   texture-host-not-started: "&cThe texture pack host is not started, see the console for more information."

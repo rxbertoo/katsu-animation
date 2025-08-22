@@ -1,5 +1,10 @@
 package io.github.maazapan.katsuAnimation.commands;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import io.github.maazapan.katsuAnimation.KatsuAnimation;
 import io.github.maazapan.katsuAnimation.animations.animation.manager.AnimationLoader;
 import io.github.maazapan.katsuAnimation.animations.animation.manager.AnimationManager;
@@ -7,6 +12,7 @@ import io.github.maazapan.katsuAnimation.animations.animation.type.AnimationType
 import io.github.maazapan.katsuAnimation.animations.textures.ResourcePackManager;
 import io.github.maazapan.katsuAnimation.animations.textures.TexturesManager;
 import io.github.maazapan.katsuAnimation.animations.textures.host.TextureHost;
+import io.github.maazapan.katsuAnimation.utils.DownloadGif;
 import io.github.maazapan.katsuAnimation.utils.KatsuUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -44,6 +50,18 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase()) {
 
+            case "test": {
+                Player player = (Player) sender;
+
+                for (Player viewer : Bukkit.getOnlinePlayers()) {
+                    if (!viewer.equals(player)) {
+                        showCrossbowAnimation(player, viewer);
+                    }
+                }
+
+            }
+            break;
+
             /*
              * This command is used to compile the resource pack.
              * + Permission: katsuanimation.cmd.compile
@@ -71,7 +89,7 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
             /*
              * This command is used to create the resource pack.
              * + Permission: katsuanimation.cmd.create
-             * - Command: /kta create <gif> <skip-frames> <size> <ascent>
+             * - Command: /kta create <gif/url> <skip-frames> <size> <ascent>
              */
             case "create": {
                 if (!sender.hasPermission("katsuanimation.cmd.create")) {
@@ -90,6 +108,18 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
 
                 int size = Integer.parseInt(args[3]);
                 int ascent = Integer.parseInt(args[4]);
+
+                if (DownloadGif.isURL(gif)) {
+                    try {
+                        gif = DownloadGif.downloadFromURL(gif);
+                        sender.sendMessage(KatsuUtils.hex(config.getString("messages.download-gif").replaceAll("%name%", gif)));
+
+                    } catch (Exception e) {
+                   e.printStackTrace();
+                        sender.sendMessage(KatsuUtils.hex(config.getString("messages.download-error")));
+                        return true;
+                    }
+                }
 
                 if (!Files.exists(Paths.get(plugin.getDataFolder() + "/gifs/" + gif))) {
                     sender.sendMessage(KatsuUtils.hex(config.getString("messages.gif-not-found")));
@@ -236,7 +266,7 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
                             return true;
                         }
 
-                        if(!KatsuUtils.isNumber(args[5])) {
+                        if (!KatsuUtils.isNumber(args[5])) {
                             sender.sendMessage(KatsuUtils.hex(config.getString("messages.number-error")));
                             return true;
                         }
@@ -407,5 +437,27 @@ public class KatsuCommand implements CommandExecutor, TabCompleter {
             if (args.length == 5) return Arrays.asList("0");
         }
         return empty;
+    }
+
+    public void showCrossbowAnimation(Player target, Player viewer) {
+        try {
+            ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+
+            // DataWatcher para simular la animación de "usando item"
+            WrappedDataWatcher watcher = new WrappedDataWatcher();
+            // Index 0 = byte flags (usar item, agachado, etc.)
+            WrappedDataWatcher.WrappedDataWatcherObject entityFlag = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));
+            watcher.setObject(entityFlag, (byte) 0x01); // USING_ITEM
+
+            // Empaquetar y enviar el paquete al "viewer"
+            PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_METADATA);
+            packet.getIntegers().write(0, target.getEntityId());
+            packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+
+            manager.sendServerPacket(viewer, packet);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

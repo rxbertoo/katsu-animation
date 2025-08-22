@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+
 
 public class AnimationStartEvent extends Event implements Cancellable {
 
@@ -30,7 +30,6 @@ public class AnimationStartEvent extends Event implements Cancellable {
         return player;
     }
 
-    @NotNull
     @Override
     public HandlerList getHandlers() {
         return HANDLERS;
